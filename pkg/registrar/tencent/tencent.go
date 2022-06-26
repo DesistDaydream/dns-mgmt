@@ -1,7 +1,6 @@
 package tencent
 
 import (
-	"github.com/DesistDaydream/dns-mgmt/pkg/config"
 	"github.com/sirupsen/logrus"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
@@ -9,52 +8,86 @@ import (
 	dnspod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323"
 )
 
-func Run(auth *config.AuthConfig, operation string) {
+type Client struct {
+	Client *dnspod.Client
+}
+
+func NewClient(ak string, sk string) *Client {
 	credential := common.NewCredential(
-		auth.AuthList["tencent"].AK,
-		auth.AuthList["tencent"].SK,
+		ak,
+		sk,
 	)
 	cpf := profile.NewClientProfile()
 	cpf.HttpProfile.Endpoint = "dnspod.tencentcloudapi.com"
 	client, _ := dnspod.NewClient(credential, "", cpf)
 
+	return &Client{
+		Client: client,
+	}
+}
+
+func (c *Client) ListDomains() ([]string, error) {
+	reqDomainList := dnspod.NewDescribeDomainListRequest()
+	resp, err := c.Client.DescribeDomainList(reqDomainList)
+	if _, ok := err.(*errors.TencentCloudSDKError); ok {
+		logrus.Errorf("An API error has returned: %s", err)
+		return nil, err
+	}
+	if err != nil {
+		logrus.Fatalln(err)
+	}
+
+	var domainList []string
+	for _, d := range resp.Response.DomainList {
+		domainList = append(domainList, *d.Name)
+	}
+	return domainList, nil
+}
+
+func (c *Client) ListRecords(domain string) ([]*dnspod.RecordListItem, error) {
+	reqRecordList := dnspod.NewDescribeRecordListRequest()
+
+	reqRecordList.Domain = common.StringPtr(domain)
+
+	resp, err := c.Client.DescribeRecordList(reqRecordList)
+	if _, ok := err.(*errors.TencentCloudSDKError); ok {
+		logrus.Errorf("An API error has returned: %s", err)
+		return nil, err
+	}
+	if err != nil {
+		logrus.Fatalln(err)
+	}
+
+	return resp.Response.RecordList, nil
+}
+
+func (c *Client) Run(operation string) {
+
 	switch operation {
 	case "list":
-		reqDomainList := dnspod.NewDescribeDomainListRequest()
-
-		resp, err := client.DescribeDomainList(reqDomainList)
-		if _, ok := err.(*errors.TencentCloudSDKError); ok {
-			logrus.Errorf("An API error has returned: %s", err)
-			return
-		}
+		domains, err := c.ListDomains()
 		if err != nil {
-			logrus.Fatalln(err)
+			logrus.Fatalf("获取域名列表失败: %v", err)
 		}
 
-		for _, d := range resp.Response.DomainList {
+		for _, d := range domains {
 			logrus.WithFields(logrus.Fields{
-				"domain": *d.Name,
-			}).Infoln("拥有域名")
+				"domain": d,
+			}).Infoln("DNSPod 中拥有的域名")
 
-			reqRecordList := dnspod.NewDescribeRecordListRequest()
-
-			reqRecordList.Domain = common.StringPtr(*d.Name)
-
-			resp, err := client.DescribeRecordList(reqRecordList)
-			if _, ok := err.(*errors.TencentCloudSDKError); ok {
-				logrus.Errorf("An API error has returned: %s", err)
-				return
-			}
+			records, err := c.ListRecords(d)
 			if err != nil {
 				logrus.Fatalln(err)
 			}
 
-			for _, rr := range resp.Response.RecordList {
+			for _, rr := range records {
 				logrus.WithFields(logrus.Fields{
 					"fqdn": *rr.Name,
-				}).Infof("%v 域名下的资源记录", *d.Name)
+				}).Infof("%v 域名下的资源记录", d)
 			}
+
 		}
 	case "update":
+		// TODO: 更新域名记录
 	}
 }

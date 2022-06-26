@@ -1,0 +1,7 @@
+authList:
+  - reg: name.com
+    ak: "XXX"
+    sk: "XXX"
+  - reg: tencent
+    ak: "YYY"
+    sk: "YYY"

@@ -9,9 +9,23 @@ import (
 	"github.com/spf13/pflag"
 )
 
+func Run(ak string, sk string, operation string, domReg string) {
+	switch domReg {
+	case "name.com":
+		c := namecom.NewClient(ak, sk)
+		c.Run(operation)
+	case "tencent":
+		c := tencent.NewClient(ak, sk)
+		c.Run(operation)
+	default:
+		logrus.Fatalf("不支持的域名注册商: %v", domReg)
+	}
+}
+
 func main() {
 	operation := pflag.StringP("operation", "o", "", "操作类型: [update, list]")
-	domReg := pflag.StringP("dom-reg", "r", "", "域名注册商, 可选值: name.com")
+	domReg := pflag.StringP("dom-reg", "r", "all", "域名注册商, 可选值: all, name.com, tencent")
+	authFile := pflag.StringP("auth-file", "f", "dd.yaml", "配置文件路径")
 	// 添加命令行标志
 	logFlags := logging.LoggingFlags{}
 	logFlags.AddFlags()
@@ -23,19 +37,19 @@ func main() {
 	}
 
 	// 读取认证信息
-	auth := config.NewAuthInfo("auth.yaml")
-	// 判断传入的域名是否存在在认证信息中
-	if !auth.IsDomainExist(*domReg) {
-		logrus.Fatalf("认证信息中不存在 %v 域名, 请检查认证信息文件或命令行参数的值", *domReg)
-	}
+	auth := config.NewAuthInfo(*authFile)
 
-	switch *domReg {
-	case "name.com":
-		namecom.Run(auth, *operation)
-	case "tencent":
-		tencent.Run(auth, *operation)
-	default:
-		logrus.Fatalf("不支持的域名注册商: %v", *domReg)
+	if *domReg == "all" {
+		for _, r := range auth.AuthList {
+			Run(r.AK, r.SK, *operation, r.Reg)
+		}
+	} else {
+		for _, r := range auth.AuthList {
+			if r.Reg == *domReg {
+				Run(r.AK, r.SK, *operation, *domReg)
+			} else {
+				continue
+			}
+		}
 	}
-
 }

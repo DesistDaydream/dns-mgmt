@@ -8,11 +8,12 @@ import (
 
 // 认证信息配置
 type AuthConfig struct {
-	AuthList map[string]Auth `json:"authList" yaml:"authList"`
+	AuthList []AuthList `json:"authList" yaml:"authList"`
 }
-type Auth struct {
-	AK string `json:"ak" yaml:"ak"`
-	SK string `json:"sk" yaml:"sk"`
+type AuthList struct {
+	Reg string `json:"reg" yaml:"reg"`
+	AK  string `json:"ak" yaml:"ak"`
+	SK  string `json:"sk" yaml:"sk"`
 }
 
 func NewAuthInfo(file string) (auth *AuthConfig) {
@@ -27,13 +28,4 @@ func NewAuthInfo(file string) (auth *AuthConfig) {
 		panic(err)
 	}
 	return auth
-}
-
-// 判断文件中是否存在域名
-func (c *AuthConfig) IsDomainExist(domName string) bool {
-	if _, ok := c.AuthList[domName]; ok {
-		return true
-	} else {
-		return false
-	}
 }
