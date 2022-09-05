@@ -39,9 +39,9 @@ func Run(ak string, sk string, flags *flagsConfig, domReg string) {
 }
 
 func main() {
+	// 添加命令行标志
 	flags := flagsConfig{}
 	flags.AddFlags()
-	// 添加命令行标志
 	logFlags := logging.LoggingFlags{}
 	logFlags.AddFlags()
 	pflag.Parse()
