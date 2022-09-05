@@ -32,7 +32,7 @@ func Run(ak string, sk string, flags *flagsConfig, domReg string) {
 		namecom.Run(c, flags.Operation, flags.excelFile, flags.excelSheet)
 	case "tencent":
 		c := tencent.NewClient(ak, sk)
-		c.Run(flags.Operation)
+		tencent.Run(c, flags.Operation)
 	default:
 		logrus.Fatalf("不支持的域名注册商: %v", domReg)
 	}

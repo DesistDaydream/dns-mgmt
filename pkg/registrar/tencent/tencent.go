@@ -61,7 +61,7 @@ func (c *Client) ListRecords(domain string) ([]*dnspod.RecordListItem, error) {
 	return resp.Response.RecordList, nil
 }
 
-func (c *Client) Run(operation string) {
+func Run(c *Client, operation string) {
 
 	switch operation {
 	case "list":
