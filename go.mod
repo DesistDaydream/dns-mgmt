@@ -1,14 +1,15 @@
 module github.com/DesistDaydream/dns-mgmt
 
-go 1.18
+go 1.20
 
 require (
+	github.com/DesistDaydream/logging v0.0.1
 	github.com/namedotcom/go v0.0.0-20180403034216-08470befbe04
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/pflag v1.0.5
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.428
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.0.428
-	github.com/xuri/excelize/v2 v2.6.1
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.656
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.0.656
+	github.com/xuri/excelize/v2 v2.7.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -19,8 +20,8 @@ require (
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
-	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8 // indirect
-	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
-	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/crypto v0.8.0 // indirect
+	golang.org/x/net v0.9.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
 )

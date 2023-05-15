@@ -2,9 +2,11 @@ package main
 
 import (
 	"github.com/DesistDaydream/dns-mgmt/pkg/config"
-	"github.com/DesistDaydream/dns-mgmt/pkg/logging"
 	"github.com/DesistDaydream/dns-mgmt/pkg/registrar/namecom"
 	"github.com/DesistDaydream/dns-mgmt/pkg/registrar/tencent"
+
+	logging "github.com/DesistDaydream/logging/pkg/logrus_init"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 )
@@ -42,13 +44,13 @@ func main() {
 	// 添加命令行标志
 	flags := flagsConfig{}
 	flags.AddFlags()
-	logFlags := logging.LoggingFlags{}
-	logFlags.AddFlags()
+	logFlags := logging.LogrusFlags{}
+	logging.AddFlags(&logFlags)
 	pflag.Parse()
 
 	// 初始化日志
-	if err := logging.LogInit(logFlags.LogLevel, logFlags.LogOutput, logFlags.LogFormat); err != nil {
-		logrus.Fatal("set log level error")
+	if err := logging.LogrusInit(&logFlags); err != nil {
+		logrus.Fatal("初始化日志失败", err)
 	}
 
 	// 读取认证信息
