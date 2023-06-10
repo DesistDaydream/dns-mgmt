@@ -20,9 +20,9 @@ type flagsConfig struct {
 }
 
 func (flags *flagsConfig) AddFlags() {
-	pflag.StringVarP(&flags.Operation, "operation", "o", "", "操作类型: [update, list]")
+	pflag.StringVarP(&flags.Operation, "operation", "o", "list", "操作类型: [update, list]")
 	pflag.StringVarP(&flags.domReg, "dom-reg", "r", "all", "域名注册商, 可选值: all, name.com, tencent")
-	pflag.StringVarP(&flags.authFile, "auth-file", "f", "dd.yaml", "配置文件路径")
+	pflag.StringVarP(&flags.authFile, "auth-file", "f", "my_auth.yaml", "配置文件路径")
 	pflag.StringVarP(&flags.excelFile, "excel-file", "F", "/mnt/d/Documents/WPS Cloud Files/1054253139/团队文档/东部王国/域名/102205.xyz_dns_records.xlsx", "配置文件路径")
 	pflag.StringVarP(&flags.excelSheet, "excel-sheet", "S", "102205.xyz_dns_records", "配置文件路径")
 }
